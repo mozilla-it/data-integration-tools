@@ -30,6 +30,7 @@ class BigQueryLoader:
 
     @staticmethod
     def download_gcs_file(bucket_name,remote_path,local_path):
+        storage_client = storage.Client()
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(remote_path)
         blob.download_to_filename(local_path)
@@ -43,6 +44,7 @@ class BigQueryLoader:
 
     @staticmethod
     def filter_query_to_table(query,dst_table,write_disposition="WRITE_TRUNCATE"):
+        client = bigquery.Client()
         job_config = bigquery.QueryJobConfig(destination=dst_table,write_disposition=write_disposition)
         job = client.query(query, job_config=job_config)
         BigQueryLoader.wait_for_job(job)
