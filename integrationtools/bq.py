@@ -2,6 +2,51 @@ from google.cloud import bigquery
 import time
 
 class BigQueryLoader:
+    """
+    Here lies some functions for making interacting with BigQuery (and GCS) a little easier
+    in the service of Airflow-based ETL jobs.
+    """
+    @staticmethod
+    def wait_for_job(job):
+        while True:
+            job.reload()
+            if job.state == 'DONE':
+                if job.error_result:
+                    raise RuntimeError(job.errors)
+                break
+            time.sleep(1)
+        job.result()
+        if job.errors is not None:
+            print(job.errors)
+        print("Job finished.")
+
+    @staticmethod
+    def extract_table_to_gcs(destination_uri,dataset,table):
+        client = bigquery.Client()
+        table_ref = client.dataset(dataset).table(table)
+        job = client.extract_table(table_ref,destination_uri,location="US")
+        BigQueryLoader.wait_for_job(job)
+        job.result()
+
+    @staticmethod
+    def download_gcs_file(bucket_name,remote_path,local_path):
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(remote_path)
+        blob.download_to_filename(local_path)
+
+    @staticmethod
+    def upload_file_to_gcs(bucket_name,local_path,remote_path):
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(remote_path)
+        blob.upload_from_filename(local_path)
+
+    @staticmethod
+    def filter_query_to_table(query,dst_table,write_disposition="WRITE_TRUNCATE"):
+        job_config = bigquery.QueryJobConfig(destination=dst_table,write_disposition=write_disposition)
+        job = client.query(query, job_config=job_config)
+        BigQueryLoader.wait_for_job(job)
+
     @staticmethod
     def load_csv_to_bigquery(filename,dataset,table,**kwargs):
         client = bigquery.Client()
