@@ -1,7 +1,7 @@
 from google.cloud import bigquery
 import time
 
-class Loader:
+class BigQueryLoader:
     @staticmethod
     def load_csv_to_bigquery(filename,dataset,table,**kwargs):
         client = bigquery.Client()
