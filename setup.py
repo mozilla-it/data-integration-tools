@@ -10,7 +10,7 @@ setup(
     author="Mozilla IT Integration Platform",
     author_email="afrank@mozilla.com",
     packages=find_packages(),
-    install_requires=["google-cloud-bigquery","google-cloud-storage","apache-airflow","kubernetes"],
+    install_requires=["google-cloud-bigquery","google-cloud-storage"],
     project_urls={"Source": "https://github.com/mozilla-it/integration-tools"},
 )
 
