@@ -13,8 +13,8 @@ class SendGridTools:
         message = kwargs.get("message","")
         subject = kwargs.get("subject","Error Alert from cloudalerts")
         message = Mail(
-            from_email=from_mail,
-            to_emails=to_mails,
+            from_email=from_email,
+            to_emails=to_emails,
             subject=subject,
             html_content=message)
         try:
